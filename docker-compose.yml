@@ -1,0 +1,45 @@
+services:
+  # Serviço para o aplicativo Node.js
+  nodejs:
+    build: backend/
+    container_name: nodejs-app
+    ports:
+      - "3000:3000" # Mapeia a porta 3000 do contêiner para a porta 3000 local
+    volumes:
+      - ./backend:/usr/src/app # Mapeia o diretório local para o contêiner para atualizar com nodemon
+    depends_on:
+      - mongodb # Espera o MongoDB estar disponível antes de rodar
+    networks:
+      - app-network # Mesma linha de comunicação
+    environment:
+      - PORT=${PORT}
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URL=${MONGO_URL}
+      - JWT_SECRET=${JWT_SECRET}
+    restart: unless-stopped # Adicionando o restart aqui para Node.js
+
+  # Serviço para o MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017" # Mapeia a porta do MongoDB
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME} # Nome de usuário
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD} # Senha
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongodb-data:/data/db # Persistência de dados
+    networks:
+      - app-network
+    restart: unless-stopped # Adicionando o restart aqui para MongoDB também
+
+# Definindo uma rede para os containers se comunicarem
+networks:
+  app-network:
+    driver: bridge
+
+# Definindo um volume para persistir os dados do MongoDB
+volumes:
+  mongodb-data:
+    driver: local

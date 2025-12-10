@@ -1,0 +1,5 @@
+# Evitar de copiar arquivos para o container +leve 
+node_modules
+npm-debug.log
+dockerfile
+.dockerignore
