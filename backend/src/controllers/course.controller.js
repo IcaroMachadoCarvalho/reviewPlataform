@@ -1,8 +1,12 @@
 import { Course } from "../models/index.js";
+import { CourseService } from "../services/index.js";
 class CourseController {
   static async createCourse(req, res) {
     try {
-      const data = await Course.create({ ...req.body, createdBy: req.user.id });
+      const data = await CourseService.postCourse({
+        ...req.body,
+        createdBy: req.user.id,
+      });
       res.status(201).json({
         sucess: true,
         message: "Curso/Evento/Produto criado com sucesso!",
@@ -31,16 +35,14 @@ class CourseController {
       page = parseInt(page) || 1;
       limit = parseInt(limit) || 10;
       const skip = (page - 1) * limit;
-      let filter = {};
-      if (title) {
-        filter.title = { $regex: title, $options: "i" }; // Filtro para o título (case insensitive)
-      }
 
-      if (category) {
-        filter.category = { $regex: category, $options: "i" }; // Filtro exato para categoria
-      }
+      const data = await CourseService.filterCourse(
+        title,
+        category,
+        skip,
+        limit
+      );
 
-      const data = await Course.find(filter).skip(skip).limit(limit).exec();
       const totalDocuments = await Course.countDocuments();
       const totalPages = Math.ceil(totalDocuments / limit);
 
@@ -65,7 +67,7 @@ class CourseController {
     try {
       const { id } = req.params;
       if (id) {
-        const data = await Course.findById({ _id: id });
+        const data = await CourseService.findById(id);
         return res.status(200).json({
           sucess: true,
           message:
@@ -74,6 +76,7 @@ class CourseController {
         });
       }
       res.status(400).json({
+        // ver se faz sentido
         sucess: false,
         data: null,
         error: "Internal Server Error",
@@ -93,29 +96,17 @@ class CourseController {
       const { id } = req.params;
       const { title, description, category, imageUrl } = req.body;
 
-      const updatedFields = {};
-
-      if (title) updatedFields.title = title;
-      if (description) updatedFields.description = description;
-      if (category) updatedFields.category = category;
-      if (imageUrl) updatedFields.imageUrl = imageUrl;
-
-      // Verifica se algum campo foi enviado para atualização
-      if (Object.keys(updatedFields).length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Nenhum campo para atualizar foi enviado",
-        });
-      }
-
-      const updatedCourse = await Course.findByIdAndUpdate(
+      const updatedCourse = await CourseService.patchCourse(
         id,
-        { $set: updatedFields },
-        { new: true }
+        title,
+        description,
+        category,
+        imageUrl
       );
+
       res.status(200).json({
         sucess: true,
-        message: "Mensagem atualizada com sucesso",
+        message: "Curso/Produto/Evento atualizada com sucesso",
         data: updatedCourse,
       });
     } catch (error) {
@@ -131,7 +122,8 @@ class CourseController {
   static async deleteCourse(req, res) {
     try {
       const { id } = req.params;
-      await Course.findByIdAndDelete(id);
+      await CourseService.removeCourse(id);
+      // await Course.findByIdAndDelete(id);
       res.status(200).json({
         sucess: true,
         data: null,
