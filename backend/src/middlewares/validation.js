@@ -5,7 +5,12 @@ const validationMiddleware = (req, res, next) => {
   if (!errors.isEmpty()) {
     return res
       .status(400)
-      .json({ success: false, data: null, errors: errors.array() });
+      .json({
+        success: false,
+        message: "Um ou mais dados fornecidos estão incorretos",
+        data: null,
+        errors: errors.array(),
+      });
   }
   next();
 };

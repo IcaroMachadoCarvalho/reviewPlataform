@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./auth.route.js";
 import courseRoutes from "./course.route.js";
+import notFoundHandler from "../middlewares/notFoundHandler.js";
+import errorHandler from "../middlewares/errorHandler.js";
+
 const routes = (app) => {
   app.use(express.json());
   app.use(cors());
@@ -14,6 +17,8 @@ const routes = (app) => {
   });
   app.use("/api/users", authRoutes);
   app.use("/api/courses", courseRoutes);
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 };
 
 export default routes;
