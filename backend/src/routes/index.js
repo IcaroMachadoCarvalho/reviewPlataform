@@ -6,9 +6,11 @@ const routes = (app) => {
   app.use(express.json());
   app.use(cors());
   app.route("/").get((req, res) => {
-    res
-      .status(200)
-      .send({ sucess: true, data: "Aplicação de Ícaro Machado de Carvalho" });
+    res.status(200).send({
+      sucess: true,
+      message: "Rota inicial da aplicação",
+      data: null,
+    });
   });
   app.use("/api/users", authRoutes);
   app.use("/api/courses", courseRoutes);

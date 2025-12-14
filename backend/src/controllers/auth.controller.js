@@ -1,13 +1,12 @@
-// import { validationResult } from "express-validator";
-import { User } from "../models/index.js";
 import bcrypt from "bcrypt";
-import generateTokenService from "../services/generateToken.js";
+import generateTokenService from "../utils/generateToken.js";
+import { UserService } from "../services/index.js";
+
 class authController {
   static async login(req, res) {
     try {
       const { username, password } = req.body;
-      const user = await User.findOne({ username }).select("-email");
-      // Select nesse caso remove campos coloquei para remover dados sensíveis
+      const user = await UserService.getUserByUsername(username);
 
       if (!user) {
         return res.status(400).json({
@@ -18,6 +17,7 @@ class authController {
       }
 
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
       if (!isPasswordCorrect) {
         return res
           .status(400)
@@ -27,11 +27,12 @@ class authController {
       // Geração do token
       const userObj = user.toObject();
       delete userObj.password; // Remove o campo password pois em cima tinha que verificar que é valido
-      const token = generateTokenService(user._id, username);
+      const token = generateTokenService(user._id, username, user.role);
+
       res.status(200).json({
         success: true,
         data: userObj,
-        token: token, // Token agora é retornado diretamente, sem precisar de objeto adicional
+        token: token,
       });
     } catch (error) {
       console.log("Erro no controlador login:", error.message);
@@ -44,19 +45,24 @@ class authController {
   static async register(req, res) {
     try {
       const { username, email, password } = req.body;
-      const existingUser = await User.findOne({ username });
-      if (existingUser) {
-        return res
-          .status(400)
-          .json({ sucess: false, data: null, errors: "E-mail já está em uso" });
+      const isUsernameOrEmailAlreadyInUse =
+        await UserService.verifyIfUsernameOrEmailAlreadyInUse(username, email);
+
+      if (isUsernameOrEmailAlreadyInUse) {
+        return res.status(400).json({
+          sucess: false,
+          data: null,
+          errors: "Credenciais inválidas",
+        });
       }
 
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      await User.create({
+
+      await UserService.createUser({
         username,
         email,
-        password: hashedPassword,
+        hashedPassword,
       });
 
       res
