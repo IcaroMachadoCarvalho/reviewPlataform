@@ -1,5 +1,6 @@
 import { Course } from "../models/index.js";
-import { CourseService } from "../services/index.js";
+import { CourseService, ReviewService } from "../services/index.js";
+
 class CourseController {
   static async createCourse(req, res, next) {
     try {
@@ -29,8 +30,8 @@ class CourseController {
       */
       let { title, category, page, limit } = req.query;
       page = parseInt(page) || 1;
-      limit = parseInt(limit) || 10;
-      const skip = (page - 1) * limit;
+      limit = parseInt(limit) || 10; // registros retornados
+      const skip = (page - 1) * limit; // Pular registros
 
       const data = await CourseService.filterCourse(
         title,
@@ -69,6 +70,33 @@ class CourseController {
       }
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
+      next(error);
+    }
+  }
+
+  static async getReviewsByCourse(req, res, next) {
+    try {
+      const { id } = req.params;
+      let { limit, page } = req.query;
+      page = parseInt(page) || 1;
+      limit = parseInt(limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const data = await ReviewService.listReviewsBySection(id, limit, skip);
+      const { averageRating, totalReviews } =
+        await ReviewService.getAverageRatingValue(id);
+      res.status(200).json({
+        success: true,
+        message: "Reviews listadas com sucesso",
+        data: data,
+        totalDocuments: totalReviews,
+        averageRating: averageRating,
+      });
+    } catch (error) {
+      console.log(
+        "Erro no controlador review listReviewsBySection:",
+        error.message
+      );
       next(error);
     }
   }

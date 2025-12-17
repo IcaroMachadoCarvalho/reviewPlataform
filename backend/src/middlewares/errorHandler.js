@@ -2,7 +2,7 @@ import BaseError from "../errors/baseError.js";
 import NotFound from "../errors/notFound.js";
 
 // eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, next) => {
+const errorMiddleware = (err, req, res, next) => {
   if (err instanceof NotFound) {
     err.sendResponse(res);
   } else if (err instanceof BaseError) {
@@ -12,4 +12,4 @@ const errorHandler = (err, req, res, next) => {
   }
 };
 
-export default errorHandler;
+export default errorMiddleware;

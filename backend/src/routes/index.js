@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./auth.route.js";
 import courseRoutes from "./course.route.js";
-import notFoundHandler from "../middlewares/notFoundHandler.js";
-import errorHandler from "../middlewares/errorHandler.js";
+import reviewRoutes from "./review.route.js";
+import { notFoundMiddleware, errorMiddleware } from "../middlewares/index.js";
 
 const routes = (app) => {
   app.use(express.json());
@@ -17,8 +17,9 @@ const routes = (app) => {
   });
   app.use("/api/users", authRoutes);
   app.use("/api/courses", courseRoutes);
-  app.use(notFoundHandler);
-  app.use(errorHandler);
+  app.use("/api/reviews", reviewRoutes);
+  app.use(notFoundMiddleware);
+  app.use(errorMiddleware);
 };
 
 export default routes;

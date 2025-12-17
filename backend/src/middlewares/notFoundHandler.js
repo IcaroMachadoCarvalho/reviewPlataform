@@ -1,7 +1,7 @@
 import NotFound from "../errors/notFound.js";
 
-const notFoundHandler = (req, res, next) => {
+const notFoundMiddleware = (req, res, next) => {
   next(new NotFound());
 };
 
-export default notFoundHandler;
+export default notFoundMiddleware;
