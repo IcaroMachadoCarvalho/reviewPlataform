@@ -1,27 +1,24 @@
 import bcrypt from "bcrypt";
 import generateTokenService from "../utils/generateToken.js";
 import { UserService } from "../services/index.js";
+import BaseError from "../errors/baseError.js";
 
 class authController {
-  static async login(req, res) {
+  static async login(req, res, next) {
     try {
       const { username, password } = req.body;
       const user = await UserService.getUserByUsername(username);
 
       if (!user) {
-        return res.status(400).json({
-          success: false,
-          data: null,
-          errors: "Credenciais inválidas",
-        });
+        next(new BaseError("Credenciais inválidas", 400));
+        return;
       }
 
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
       if (!isPasswordCorrect) {
-        return res
-          .status(400)
-          .json({ success: false, errors: "Credenciais inválidas" });
+        next(new BaseError("Credenciais inválidas", 400));
+        return;
       }
 
       // Geração do token
@@ -36,24 +33,19 @@ class authController {
       });
     } catch (error) {
       console.log("Erro no controlador login:", error.message);
-      res
-        .status(500)
-        .json({ success: false, data: null, errors: "Internal Server Error" });
+      next(error);
     }
   }
 
-  static async register(req, res) {
+  static async register(req, res, next) {
     try {
       const { username, email, password } = req.body;
       const isUsernameOrEmailAlreadyInUse =
         await UserService.verifyIfUsernameOrEmailAlreadyInUse(username, email);
 
       if (isUsernameOrEmailAlreadyInUse) {
-        return res.status(400).json({
-          sucess: false,
-          data: null,
-          errors: "Credenciais inválidas",
-        });
+        next(new BaseError("Credenciais inválidas", 400));
+        return;
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -70,9 +62,7 @@ class authController {
         .json({ sucess: true, message: "Cadastro de conta concluído" });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
-      res
-        .status(500)
-        .json({ sucess: false, data: null, errors: "Internal Server Error" });
+      next(error);
     }
   }
 }

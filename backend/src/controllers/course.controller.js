@@ -1,7 +1,8 @@
 import { Course } from "../models/index.js";
-import { CourseService } from "../services/index.js";
+import { CourseService, ReviewService } from "../services/index.js";
+
 class CourseController {
-  static async createCourse(req, res) {
+  static async createCourse(req, res, next) {
     try {
       const data = await CourseService.postCourse({
         ...req.body,
@@ -14,15 +15,11 @@ class CourseController {
       });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
-      res.status(500).json({
-        sucess: false,
-        data: null,
-        errors: "Internal Server Error",
-      });
+      next(error);
     }
   }
 
-  static async getCourses(req, res) {
+  static async getCourses(req, res, next) {
     try {
       // GET /courses?page=1&limit=10&title=JavaScript&category=Programação
       /*
@@ -33,8 +30,8 @@ class CourseController {
       */
       let { title, category, page, limit } = req.query;
       page = parseInt(page) || 1;
-      limit = parseInt(limit) || 10;
-      const skip = (page - 1) * limit;
+      limit = parseInt(limit) || 10; // registros retornados
+      const skip = (page - 1) * limit; // Pular registros
 
       const data = await CourseService.filterCourse(
         title,
@@ -55,15 +52,11 @@ class CourseController {
       });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
-      res.status(500).json({
-        sucess: false,
-        data: null,
-        errors: "Internal Server Error",
-      });
+      next(error);
     }
   }
 
-  static async getCourseById(req, res) {
+  static async getCourseById(req, res, next) {
     try {
       const { id } = req.params;
       if (id) {
@@ -75,23 +68,40 @@ class CourseController {
           data: data,
         });
       }
-      res.status(400).json({
-        // ver se faz sentido
-        sucess: false,
-        data: null,
-        error: "Internal Server Error",
-      });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
-      res.status(500).json({
-        sucess: false,
-        data: null,
-        errors: "Internal Server Error",
-      });
+      next(error);
     }
   }
 
-  static async updateCourse(req, res) {
+  static async getReviewsByCourse(req, res, next) {
+    try {
+      const { id } = req.params;
+      let { limit, page } = req.query;
+      page = parseInt(page) || 1;
+      limit = parseInt(limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const data = await ReviewService.listReviewsBySection(id, limit, skip);
+      const { averageRating, totalReviews } =
+        await ReviewService.getAverageRatingValue(id);
+      res.status(200).json({
+        success: true,
+        message: "Reviews listadas com sucesso",
+        data: data,
+        totalDocuments: totalReviews,
+        averageRating: averageRating,
+      });
+    } catch (error) {
+      console.log(
+        "Erro no controlador review listReviewsBySection:",
+        error.message
+      );
+      next(error);
+    }
+  }
+
+  static async updateCourse(req, res, next) {
     try {
       const { id } = req.params;
       const { title, description, category, imageUrl } = req.body;
@@ -111,19 +121,14 @@ class CourseController {
       });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
-      res.status(500).json({
-        sucess: false,
-        data: null,
-        errors: "Internal Server Error",
-      });
+      next(error);
     }
   }
 
-  static async deleteCourse(req, res) {
+  static async deleteCourse(req, res, next) {
     try {
       const { id } = req.params;
       await CourseService.removeCourse(id);
-      // await Course.findByIdAndDelete(id);
       res.status(200).json({
         sucess: true,
         data: null,
@@ -131,11 +136,7 @@ class CourseController {
       });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
-      res.status(500).json({
-        sucess: false,
-        data: null,
-        errors: "Internal Server Error",
-      });
+      next(error);
     }
   }
 }

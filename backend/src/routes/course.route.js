@@ -8,6 +8,7 @@ import {
   updateCourseValidator,
   deleteCourseByIdValidator,
 } from "../validators/course.validators.js";
+import { listReviewsBySectionValidator } from "../validators/review.validators.js";
 const router = express.Router();
 
 // Auth Middleware é bom antes da verificação
@@ -26,6 +27,13 @@ router
     getCoursesValidator,
     validationMiddleware,
     CourseController.getCourses
+  )
+  .get(
+    "/:id/reviews",
+    authMiddleware,
+    listReviewsBySectionValidator,
+    validationMiddleware,
+    CourseController.getReviewsByCourse
   )
   .post(
     "/",

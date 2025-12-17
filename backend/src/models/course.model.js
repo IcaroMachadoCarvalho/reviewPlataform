@@ -25,7 +25,7 @@ const courseSchema = mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true } // Ele vai criar e atualizar os campos updatedAt e createdAt
+  { timestamps: true, versionKey: false } // Ele vai criar e atualizar os campos updatedAt e createdAt
 );
 
 const Course = mongoose.model("Course", courseSchema);
