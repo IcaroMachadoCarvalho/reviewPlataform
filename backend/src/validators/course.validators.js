@@ -36,6 +36,11 @@ export const getCoursesValidator = [
     .optional()
     .isInt({ min: 1, max: 100 })
     .withMessage("O campo 'limit' deve ser um número entre 1 e 100"),
+
+  query("rating")
+    .optional()
+    .isInt({ min: 1, max: 5 })
+    .withMessage("O campo 'rating' deve ser um número entre 1 e 5"),
 ];
 
 export const createCourseValidator = [
