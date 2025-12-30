@@ -148,7 +148,7 @@ class CourseController {
     try {
       const { id } = req.params;
       await CourseService.removeCourse(id);
-      res.status(200).json({
+      res.status(204).json({
         sucess: true,
         data: null,
         message: "Curso Apagado com sucesso!",

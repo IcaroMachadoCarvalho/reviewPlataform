@@ -10,4 +10,8 @@ export class ReviewService {
   static async getAverageRatingValue(courseId) {
     return ReviewRepository.getAverageRating(courseId);
   }
+
+  static async deleteReview(idReview) {
+    return ReviewRepository.delete(idReview);
+  }
 }

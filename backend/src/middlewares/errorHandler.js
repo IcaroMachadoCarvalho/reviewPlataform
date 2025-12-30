@@ -3,6 +3,7 @@ import NotFound from "../errors/notFound.js";
 
 // eslint-disable-next-line no-unused-vars
 const errorMiddleware = (err, req, res, next) => {
+  console.log(err.message);
   if (err instanceof NotFound) {
     err.sendResponse(res);
   } else if (err instanceof BaseError) {

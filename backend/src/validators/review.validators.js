@@ -37,3 +37,11 @@ export const listReviewsBySectionValidator = [
     .isInt({ min: 1, max: 100 })
     .withMessage("O campo 'limit' deve ser um número entre 1 e 100"),
 ];
+
+export const deleteReviewValidator = [
+  param("id")
+    .notEmpty()
+    .withMessage("O id precisa ser informado para a operação")
+    .isMongoId()
+    .withMessage("O campo 'id' deve ser um ObjectId válido"),
+];

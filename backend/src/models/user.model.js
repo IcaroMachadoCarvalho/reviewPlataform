@@ -23,6 +23,11 @@ const userSchema = mongoose.Schema(
       enum: ["admin", "user"],
       default: "user",
     },
+    status: {
+      type: String,
+      enum: ["normal", "blocked"],
+      default: "normal",
+    },
   },
   { timestamps: true, versionKey: false }
 );

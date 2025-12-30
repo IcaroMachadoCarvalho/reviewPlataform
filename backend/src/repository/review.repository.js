@@ -37,4 +37,8 @@ export class ReviewRepository {
       totalReviews: result[0].totalReviews,
     };
   }
+
+  static async delete(idReview) {
+    return Review.findByIdAndDelete(idReview);
+  }
 }

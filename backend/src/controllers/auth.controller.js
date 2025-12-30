@@ -4,6 +4,9 @@ import { UserService } from "../services/index.js";
 import BaseError from "../errors/baseError.js";
 
 class authController {
+  // Foca na interação com a requisição e resposta, e delega a lógica de negócios para o service.
+  // Service: Foca na lógica de negócios, como a verificação de dados e manipulação de dados no banco (verificar e-mails, criar usuários, etc.).
+
   static async login(req, res, next) {
     try {
       const { username, password } = req.body;
@@ -28,6 +31,7 @@ class authController {
 
       res.status(200).json({
         success: true,
+        message: "Usuário logado com sucesso!",
         data: userObj,
         token: token,
       });
@@ -44,8 +48,7 @@ class authController {
         await UserService.verifyIfUsernameOrEmailAlreadyInUse(username, email);
 
       if (isUsernameOrEmailAlreadyInUse) {
-        next(new BaseError("Credenciais inválidas", 400));
-        return;
+        return next(new BaseError("Credenciais inválidas", 400));
       }
 
       const salt = await bcrypt.genSalt(10);
@@ -57,9 +60,11 @@ class authController {
         hashedPassword,
       });
 
-      res
-        .status(201)
-        .json({ sucess: true, message: "Cadastro de conta concluído" });
+      res.status(201).json({
+        sucess: true,
+        message: "Cadastro de conta concluído",
+        data: null,
+      });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
       next(error);
