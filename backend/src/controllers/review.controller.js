@@ -17,4 +17,19 @@ export default class ReviewController {
       next(error);
     }
   }
+
+  static async deleteReview(req, res, next) {
+    try {
+      const { id } = req.params;
+      await ReviewService.deleteReview(id);
+      res.status(204).json({
+        success: true,
+        message: "Review apagada com sucesso",
+        data: null,
+      });
+    } catch (error) {
+      console.log("Erro no controlador review delete:", error.message);
+      next(error);
+    }
+  }
 }

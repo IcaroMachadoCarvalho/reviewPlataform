@@ -28,16 +28,18 @@ class CourseController {
         req.query	Passado na query string da URL (GET)	Filtros, buscas, paginação	req.query.page, req.query.category
         req.params	Definido nas rotas da URL (GET/POST/PUT/DELETE)	Identificar recursos (IDs)	req.params.id, req.params.name
       */
-      let { title, category, page, limit } = req.query;
+      let { title, category, page, limit, rating } = req.query;
       page = parseInt(page) || 1;
       limit = parseInt(limit) || 10; // registros retornados
+      rating = parseInt(rating);
       const skip = (page - 1) * limit; // Pular registros
 
       const data = await CourseService.filterCourse(
         title,
         category,
         skip,
-        limit
+        limit,
+        rating
       );
 
       const totalDocuments = await Course.countDocuments();
@@ -101,6 +103,23 @@ class CourseController {
     }
   }
 
+  static async getCoursesRanking(req, res, next) {
+    try {
+      const result = await CourseService.listCourseRanking();
+      res.status(200).json({
+        success: true,
+        message: "Reviews listadas com sucesso",
+        data: result,
+      });
+    } catch (error) {
+      console.log(
+        "Erro no controlador review listReviewsBySection:",
+        error.message
+      );
+      next(error);
+    }
+  }
+
   static async updateCourse(req, res, next) {
     try {
       const { id } = req.params;
@@ -129,7 +148,7 @@ class CourseController {
     try {
       const { id } = req.params;
       await CourseService.removeCourse(id);
-      res.status(200).json({
+      res.status(204).json({
         sucess: true,
         data: null,
         message: "Curso Apagado com sucesso!",

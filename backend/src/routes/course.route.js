@@ -13,6 +13,7 @@ const router = express.Router();
 
 // Auth Middleware é bom antes da verificação
 router
+  .get("/ranking", authMiddleware, CourseController.getCoursesRanking) // + específicas em cima
   .get(
     "/:id",
     authMiddleware,
@@ -20,20 +21,19 @@ router
     validationMiddleware,
     CourseController.getCourseById
   )
-
-  .get(
-    "/",
-    authMiddleware,
-    getCoursesValidator,
-    validationMiddleware,
-    CourseController.getCourses
-  )
   .get(
     "/:id/reviews",
     authMiddleware,
     listReviewsBySectionValidator,
     validationMiddleware,
     CourseController.getReviewsByCourse
+  )
+  .get(
+    "/",
+    authMiddleware,
+    getCoursesValidator,
+    validationMiddleware,
+    CourseController.getCourses
   )
   .post(
     "/",

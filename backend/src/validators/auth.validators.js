@@ -33,15 +33,15 @@ export const registerValidator = [
     .withMessage("A senha precisa ser informado para a operação")
     .isLength({ min: 6 })
     .withMessage("A senha deve ter pelo menos 6 caracteres"),
-  body("role")
-    .trim()
-    .escape()
-    .custom((value) => {
-      // Valida se o valor de 'role' é 'admin' ou 'user'
-      const roles = ["admin", "user"];
-      if (!roles.includes(value)) {
-        throw new Error("O papel pode ser 'admin' ou 'user'");
-      }
-      return true;
-    }),
+  // body("role")
+  //   .trim()
+  //   .escape()
+  //   .custom((value) => {
+  //     // Valida se o valor de 'role' é 'admin' ou 'user'
+  //     const roles = ["admin", "user"];
+  //     if (!roles.includes(value)) {
+  //       throw new Error("O papel pode ser 'admin' ou 'user'");
+  //     }
+  //     return true;
+  //   }),
 ];

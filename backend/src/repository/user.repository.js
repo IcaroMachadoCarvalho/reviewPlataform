@@ -1,6 +1,10 @@
 import { User } from "../models/index.js";
 
 export class UserRepository {
+  static async getUserById(userId) {
+    return User.findById(userId);
+  }
+
   static async getUserByUsername(username) {
     return User.findOne({ username }).select("-email");
   }
@@ -13,32 +17,38 @@ export class UserRepository {
 
   static async create(newUser) {
     const { username, email, hashedPassword } = newUser;
-    console.log(hashedPassword);
     return User.create({
       username,
       email,
       password: hashedPassword,
     });
   }
+
+  static update(userId, userData) {
+    return User.findOneAndUpdate(
+      { _id: userId },
+      { $set: userData },
+      { new: true }
+    );
+  }
+
+  static async block(userId) {
+    return User.findOneAndUpdate(userId, {
+      $set: {
+        status: "blocked",
+      },
+    });
+  }
+
+  static async unblock(userId) {
+    return User.findOneAndUpdate(userId, {
+      $set: {
+        status: "normal",
+      },
+    });
+  }
+
+  static async getUsers() {
+    return User.find({}).select("-password");
+  }
 }
-
-export const getUserByUsername = async (username) => {
-  return User.findOne({ username }).select("-email");
-  // Select nesse caso remove campos coloquei para remover dados sensíveis
-};
-
-export const getUserByUsernameOrEmail = async (username, email) => {
-  return User.findOne({
-    $or: [{ username }, { email }],
-  }).select("-email");
-};
-
-export const createUser = async (newUser) => {
-  const { username, email, hashedPassword } = newUser;
-  console.log(hashedPassword);
-  return User.create({
-    username,
-    email,
-    password: hashedPassword,
-  });
-};

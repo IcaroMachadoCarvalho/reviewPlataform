@@ -5,17 +5,88 @@ export class CourseService {
     return CourseRepository.create(newCourse);
   }
 
-  static async filterCourse(title, category, skip, limit) {
-    let filter = {};
+  static async filterCourse(title, category, skip, limit, rating) {
+    let filters = [];
+
     if (title) {
-      filter.title = { $regex: title, $options: "i" }; // Filtro para o título (case insensitive)
+      filters.push({
+        $match: {
+          title: { $regex: title, $options: "i" },
+        },
+      });
     }
-
     if (category) {
-      filter.category = { $regex: category, $options: "i" }; // Filtro exato para categoria
+      filters.push({
+        $match: {
+          category: { $regex: category, $options: "i" },
+        },
+      });
     }
 
-    return CourseRepository.getCourses(filter, skip, limit);
+    const queryGetCourses = [
+      ...filters, // Copia filtros
+      {
+        $lookup: {
+          // É basicamente um join
+          from: "reviews", // pega da coleção reviews
+          localField: "_id", // Compara com id
+          foreignField: "courseId",
+          as: "reviews", // Retorna uma lista de tudo *
+        },
+      },
+
+      {
+        $project: {
+          // Define que dados vão retornar e diferente do $group retona uma lista não um
+          title: 1, // 1 significa que vai trazer
+          category: 1,
+          averageRating: { $avg: "$reviews.rating" }, // Pega da lista "as" do reviews do lookup *
+          totalReviews: { $size: "$reviews" },
+        },
+      },
+    ];
+
+    if (rating) {
+      queryGetCourses.push({
+        $match: { averageRating: { $gte: rating } },
+      });
+    }
+
+    queryGetCourses.push({ $skip: parseInt(skip) }, { $limit: limit });
+
+    return CourseRepository.getCourses(queryGetCourses);
+  }
+
+  static async listCourseRanking() {
+    const queryCoursesRanking = [
+      {
+        $lookup: {
+          from: "reviews",
+          localField: "_id",
+          foreignField: "courseId",
+          as: "reviews",
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          category: 1,
+          averageRating: { $avg: "$reviews.rating" },
+          totalReviews: { $size: "$reviews" },
+        },
+      },
+      {
+        $sort: {
+          averageRating: -1, // Seria DESC Maior para menor
+          totalReviews: -1, // ASC seria 1
+        },
+      },
+      {
+        $limit: 10,
+      },
+    ];
+
+    return CourseRepository.getCourses(queryCoursesRanking);
   }
 
   static async findById(id) {
