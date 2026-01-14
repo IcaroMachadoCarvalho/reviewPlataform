@@ -1,3 +1,4 @@
+import BaseError from "../errors/baseError.js";
 import { CourseRepository } from "../repository/index.js";
 
 export class CourseService {
@@ -90,7 +91,11 @@ export class CourseService {
   }
 
   static async findById(id) {
-    return CourseRepository.getCourseById(id);
+    const course = await CourseRepository.getCourseById(id);
+
+    if (!course) throw new BaseError("Curso não encontrado", 404);
+
+    return course;
   }
 
   static async patchCourse(id, title, description, category, imageUrl) {
@@ -105,10 +110,13 @@ export class CourseService {
       throw new Error("Nenhum campo para atualizar foi enviado");
     }
 
+    await this.findById(id);
+
     CourseRepository.update(id, updatedFields);
   }
 
   static async removeCourse(id) {
+    await this.findById(id);
     return CourseRepository.delete(id);
   }
 }

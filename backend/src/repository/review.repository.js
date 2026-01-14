@@ -41,4 +41,8 @@ export class ReviewRepository {
   static async delete(idReview) {
     return Review.findByIdAndDelete(idReview);
   }
+
+  static async getReview(idReview) {
+    return Review.findById(idReview);
+  }
 }

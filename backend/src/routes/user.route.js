@@ -42,6 +42,7 @@ router.patch(
 router.patch(
   "/role",
   authMiddleware,
+  isAdmin,
   updateUserRoleValidator,
   validationMiddleware,
   UserController.setUserRole

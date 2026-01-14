@@ -1,31 +1,9 @@
 import { UserService } from "../services/index.js";
-import BaseError from "../errors/baseError.js";
-import bcrypt from "bcrypt";
 
 export default class UserController {
   static async updateUser(req, res, next) {
     try {
-      const { username, email, password } = req.body;
-      const isUsernameOrEmailAlreadyInUse =
-        await UserService.verifyIfUsernameOrEmailAlreadyInUse(username, email);
-
-      if (isUsernameOrEmailAlreadyInUse) {
-        next(new BaseError("Credenciais já em uso", 400));
-        return;
-      }
-
-      const updatedUserData = req.body;
-
-      if (password) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        updatedUserData.password = hashedPassword;
-      }
-
-      const updatedUser = await UserService.updateUser(
-        req.user.id,
-        updatedUserData
-      );
+      const updatedUser = await UserService.updateUser(req.user.id, req.body);
       res.status(200).json({
         sucess: true,
         message: "Usuário atualizado com sucesso!",
