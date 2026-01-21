@@ -17,3 +17,45 @@ router
   );
 
 export default router;
+
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login do usuário
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginRequest'
+ *     responses:
+ *       200:
+ *         $ref: "#/components/responses/SuccessLogin"
+ *       401:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
+/**
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Cadastro do usuário
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: Cadastro de conta concluído
+ *       400:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro interno do servidor
+ */

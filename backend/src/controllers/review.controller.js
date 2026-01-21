@@ -22,7 +22,7 @@ export default class ReviewController {
     try {
       const { id } = req.params;
       await ReviewService.deleteReview(id);
-      res.status(204).json({
+      res.status(200).json({
         success: true,
         message: "Review apagada com sucesso",
         data: null,

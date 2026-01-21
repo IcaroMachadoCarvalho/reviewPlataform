@@ -5,6 +5,10 @@ export class CourseRepository {
     return Course.create(newUser);
   }
 
+  static async findByTitle(courseTitle) {
+    return Course.findOne({ title: courseTitle });
+  }
+
   static async getCourses(query) {
     const data = Course.aggregate(query);
     return data;
@@ -18,7 +22,7 @@ export class CourseRepository {
     return Course.findByIdAndUpdate(
       id,
       { $set: updatedFields },
-      { new: true }
+      { new: true },
     ).exec();
     // Tem certas situações tem uma promise tipo no get e por ai vai provalvelmente no find por ter tamanho variável
   }

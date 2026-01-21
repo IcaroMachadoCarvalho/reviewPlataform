@@ -9,7 +9,7 @@ class CourseController {
         createdBy: req.user.id,
       });
       res.status(201).json({
-        sucess: true,
+        success: true,
         message: "Curso/Evento/Produto criado com sucesso!",
         data: data,
       });
@@ -39,14 +39,14 @@ class CourseController {
         category,
         skip,
         limit,
-        rating
+        rating,
       );
 
       const totalDocuments = await Course.countDocuments();
       const totalPages = Math.ceil(totalDocuments / limit);
 
       return res.status(200).json({
-        sucess: true,
+        success: true,
         message: "Busca de Cursos/Produtos/Eventos realizada com sucesso!",
         data: data,
         totalDocuments: totalDocuments,
@@ -64,7 +64,7 @@ class CourseController {
       if (id) {
         const data = await CourseService.findById(id);
         return res.status(200).json({
-          sucess: true,
+          success: true,
           message:
             "Busca de Curso/Produto/Evento por id realizada com sucesso!",
           data: data,
@@ -97,7 +97,7 @@ class CourseController {
     } catch (error) {
       console.log(
         "Erro no controlador review listReviewsBySection:",
-        error.message
+        error.message,
       );
       next(error);
     }
@@ -108,13 +108,13 @@ class CourseController {
       const result = await CourseService.listCourseRanking();
       res.status(200).json({
         success: true,
-        message: "Reviews listadas com sucesso",
+        message: "Cursos com maior avaliação listadas com sucesso",
         data: result,
       });
     } catch (error) {
       console.log(
         "Erro no controlador review listReviewsBySection:",
-        error.message
+        error.message,
       );
       next(error);
     }
@@ -130,11 +130,11 @@ class CourseController {
         title,
         description,
         category,
-        imageUrl
+        imageUrl,
       );
 
       res.status(200).json({
-        sucess: true,
+        success: true,
         message: "Curso/Produto/Evento atualizada com sucesso",
         data: updatedCourse,
       });
@@ -148,10 +148,10 @@ class CourseController {
     try {
       const { id } = req.params;
       await CourseService.removeCourse(id);
-      res.status(204).json({
-        sucess: true,
+      res.status(200).json({
+        success: true,
         data: null,
-        message: "Curso Apagado com sucesso!",
+        message: "Curso/Evento/Produto Apagado com sucesso!",
       });
     } catch (error) {
       console.log("Erro no controlador register:", error.message);
