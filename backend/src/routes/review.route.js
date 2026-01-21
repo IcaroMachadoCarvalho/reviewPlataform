@@ -18,7 +18,7 @@ router.delete(
   isAdmin,
   deleteReviewValidator,
   validationMiddleware,
-  ReviewController.deleteReview
+  ReviewController.deleteReview,
 );
 
 router.post(
@@ -26,7 +26,58 @@ router.post(
   authMiddleware,
   createReviewValidator,
   validationMiddleware,
-  ReviewController.createReview
+  ReviewController.createReview,
 );
 
 export default router;
+
+/**
+ * @swagger
+ * /api/reviews:
+ *   post:
+ *     summary: Cria uma nova review
+ *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ReviewRequest'
+ *     responses:
+ *       201:
+ *         description: Review criada com sucesso
+ *       400:
+ *         description: Um ou mais dados fornecidos está incorretos
+ *       401:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro interno do servidor
+ */
+
+/**
+ * @swagger
+ * /api/reviews/{id}:
+ *   delete:
+ *     summary: Deleta uma review
+ *     tags: [Review]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID da review
+ *     responses:
+ *       200:
+ *         description: Review deletada com sucesso
+ *       400:
+ *         description: Um ou mais dados fornecidos está incorretos
+ *       401:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro interno do servidor
+ */

@@ -29,19 +29,11 @@ export default router;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - username
- *               - password
- *             properties:
- *               username:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/LoginRequest'
  *     responses:
  *       200:
- *         description: Login realizado com sucesso
- *       400:
+ *         $ref: "#/components/responses/SuccessLogin"
+ *       401:
  *         description: Credenciais inválidas
  *       500:
  *         description: Erro interno do servidor
@@ -58,18 +50,7 @@ export default router;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - username
- *               - email
- *               - password
- *             properties:
- *               username:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
+ *             $ref: '#/components/schemas/RegisterRequest'
  *     responses:
  *       201:
  *         description: Cadastro de conta concluído

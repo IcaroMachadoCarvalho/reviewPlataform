@@ -5,7 +5,7 @@ export default class UserController {
     try {
       const updatedUser = await UserService.updateUser(req.user.id, req.body);
       res.status(200).json({
-        sucess: true,
+        success: true,
         message: "Usuário atualizado com sucesso!",
         data: updatedUser,
       });
@@ -22,7 +22,7 @@ export default class UserController {
       await UserService.updateRole(userId, role);
 
       res.status(200).json({
-        sucess: true,
+        success: true,
         message: "Usuário atualizado com sucesso!",
         data: null,
       });
@@ -38,8 +38,8 @@ export default class UserController {
 
       await UserService.blockUser(id);
 
-      res.status(204).json({
-        sucess: true,
+      res.status(200).json({
+        success: true,
         message: "Usuário bloqueado com sucesso!",
         data: null,
       });
@@ -54,8 +54,8 @@ export default class UserController {
 
       await UserService.unblockUser(id);
 
-      res.status(204).json({
-        sucess: true,
+      res.status(200).json({
+        success: true,
         message: "Usuário desbloqueado com sucesso!",
         data: null,
       });
@@ -70,7 +70,7 @@ export default class UserController {
       const usersList = await UserService.getUsers();
 
       res.status(200).json({
-        sucess: true,
+        success: true,
         message: "Lista de usuários obtidos com sucesso!",
         data: usersList,
       });

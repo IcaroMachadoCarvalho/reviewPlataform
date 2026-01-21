@@ -9,7 +9,8 @@
     "dev": "nodemon -L server.js",
     "lint": "eslint .",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --verbose --detectOpenHandles src/tests/routes/user.routes.spec.js"
   },
   "keywords": [],
   "author": "Ícaro Machado de Carvalho",

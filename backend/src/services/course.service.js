@@ -3,6 +3,11 @@ import { CourseRepository } from "../repository/index.js";
 
 export class CourseService {
   static async postCourse(newCourse) {
+    const existingCourseWithThisTitle = await CourseRepository.findByTitle(
+      newCourse.title,
+    );
+    if (existingCourseWithThisTitle)
+      throw new BaseError("Curso com este título já existe", 400);
     return CourseRepository.create(newCourse);
   }
 
@@ -100,23 +105,31 @@ export class CourseService {
 
   static async patchCourse(id, title, description, category, imageUrl) {
     const updatedFields = {};
+    if (title) {
+      const isTitleUsed = await CourseRepository.findByTitle(title);
+      if (isTitleUsed)
+        throw new BaseError("Título já está em uso em outro curso", 404);
+      updatedFields.title = title;
+    }
 
-    if (title) updatedFields.title = title;
     if (description) updatedFields.description = description;
     if (category) updatedFields.category = category;
     if (imageUrl) updatedFields.imageUrl = imageUrl;
 
     if (Object.keys(updatedFields).length === 0) {
-      throw new Error("Nenhum campo para atualizar foi enviado");
+      throw new BaseError("Nenhum campo para atualizar foi enviado", 404);
     }
 
-    await this.findById(id);
+    const course = await CourseRepository.getCourseById(id);
+    if (!course) throw new BaseError("Curso não encontrado", 404);
 
     CourseRepository.update(id, updatedFields);
   }
 
   static async removeCourse(id) {
-    await this.findById(id);
+    const course = await CourseRepository.getCourseById(id);
+    if (!course) throw new BaseError("Curso não encontrado", 404);
+
     return CourseRepository.delete(id);
   }
 }
